@@ -1,0 +1,29 @@
+{
+  "game": "Dune: Spice Wars",
+  "endpoint_policy": "local-first",
+  "artifacts": [
+    {
+      "name": "Faction planner",
+      "file": "faction_planner.html",
+      "kind": "faction-planner",
+      "created": "2026-11-24",
+      "published_url": null,
+      "local_only": false,
+      "spoiler_class": "per fact: enemy-tier, puzzle-tier and spoiler tags from the corpus; late-game facts hidden by default",
+      "sources": [
+        "factions/*.md",
+        "items/abilities.md",
+        "items/upgrades.md",
+        "items/developments.md",
+        "items/builds.md",
+        "sections/conquest.md",
+        "sections/landsraad.md",
+        "sections/conflicts.md",
+        "mechanics.md",
+        "warning_tiers.md"
+      ],
+      "writes_state": null,
+      "notes": "Built by extract_tools/build_faction_planner.py from the corpus; rebuild after any corpus change. Pick one house or compare two; the enemy, decision and spoiler-reach controls start at the guide's settings; a Paid DLC switch (starts off in this copy, set by the Paid DLC line of warning_tiers.md) shows or hides House Vernius of Ix and its lines."
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+# Hintforge corpus .gitignore -- DENY-BY-DEFAULT.
+# Nothing ships unless whitelisted below. User state/setup and dev scaffolding
+# are excluded by NOT being listed.
+*
+!.gitignore
+!*/
+
+# --- Fixed spine (universal core per docs/corpus-format.md) ---
+# NOTE: CHECKPOINT.md is universal core too, but is DELIBERATELY excluded here --
+# it is per-user playthrough state (player name, dials). Do not add it.
+!architecture_manifest.md
+!items/**
+!sections/**
+!_overflow/**
+!achievements.md
+!controls.md
+!dependencies.md
+!limitations.md
+!mechanics.md
+!persona.md
+!settings.md
+!warning_tiers.md
+!CLAUDE.md
+!AGENTS.md
+!DISCLAIMER.md
+
+# --- Release presentation (README + status card) ---
+!README.md
+!assets/**
+
+# --- Interactive artifact: the faction planner page and the script that rebuilds it ---
+# Its spec, scratch screenshots and test seeds are dev-only and never ship.
+!artifacts/faction_planner.html
+!artifacts/artifacts.json
+!extract_tools/build_faction_planner.py
+!extract_tools/corpus_blocks.py
+!extract_tools/faction_planner_template.html
+
+# --- Declared vector-extensions (one !<ext>/** per manifest entry) ---
+!factions/**

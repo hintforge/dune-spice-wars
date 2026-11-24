@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dune: Spice Wars Faction Planner</title>
+<style>
+:root{
+  --bg:#15100b; --bg2:#1c1510; --panel:#241b14; --panel2:#2d2218; --line:#4b3a28; --line2:#6a5236;
+  --sand:#efe0c0; --muted:#b9a383; --spice:#e8812f; --spice2:#f6b25c;
+  --ok:#93c97e; --warn:#e8b34c; --bad:#e8806a; --info:#78b9e6;
+  --acc:#e8812f;
+  --serif:"Palatino Linotype","Book Antiqua",Palatino,Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mono:ui-monospace,"Cascadia Mono",Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{color-scheme:dark}
+body{margin:0;background:var(--bg);color:var(--sand);font:16px/1.5 var(--sans);
+  background-image:radial-gradient(1200px 500px at 85% -10%,rgba(232,129,47,.18),transparent 60%),radial-gradient(900px 420px at -10% 0%,rgba(120,185,230,.07),transparent 60%);
+  background-repeat:no-repeat}
+.wrap{max-width:1240px;margin:0 auto;padding:0 16px 48px}
+header.top{position:relative;padding:28px 0 18px;overflow:hidden}
+header.top svg.dunes{position:absolute;right:-20px;top:0;width:min(560px,70%);height:100%;opacity:.55;pointer-events:none}
+header.top h1{font:700 clamp(26px,4.2vw,40px)/1.1 var(--serif);letter-spacing:.02em;margin:0 0 6px;color:var(--spice2)}
+header.top p{margin:0;max-width:640px;color:var(--muted)}
+.panel{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:10px}
+.controls{padding:14px 16px;display:grid;gap:14px}
+.crow{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:flex-start}
+.lbl{font:600 11px/1.2 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:block}
+.seg{display:inline-flex;border:1px solid var(--line2);border-radius:8px;overflow:hidden}
+.seg button{background:transparent;border:0;border-right:1px solid var(--line);color:var(--sand);font:600 14px var(--sans);padding:7px 13px;min-width:40px;cursor:pointer;position:relative}
+.seg button:last-child{border-right:0}
+.seg button:hover{background:rgba(232,129,47,.12)}
+.seg button[aria-pressed=true]{background:var(--spice);color:#1b1006}
+.seg button .gdot{position:absolute;left:50%;bottom:2px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--spice2)}
+.seg button[aria-pressed=true] .gdot{background:#1b1006}
+button:focus-visible{outline:2px solid var(--spice2);outline-offset:2px}
+.dhint{font-size:13px;color:var(--muted);margin-top:5px;max-width:300px}
+.status{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;justify-content:space-between;border-top:1px dashed var(--line);padding-top:12px;font-size:14px;color:var(--muted)}
+.status b{color:var(--sand)}
+.linkbtn{background:none;border:0;color:var(--spice2);font:600 14px var(--sans);cursor:pointer;text-decoration:underline;padding:2px 0}
+.picker{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin:18px 0}
+.fcard{--acc:#e8812f;text-align:left;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-top:4px solid var(--acc);border-radius:10px;padding:12px 14px;color:var(--sand);cursor:pointer;font:inherit;display:flex;flex-direction:column;gap:4px;position:relative}
+.fcard:hover{border-color:var(--acc);transform:translateY(-1px)}
+.fcard[aria-pressed=true]{box-shadow:0 0 0 2px var(--acc),0 8px 24px rgba(0,0,0,.45)}
+.fcard .fname{font:700 19px/1.2 var(--serif);color:var(--acc)}
+.fcard .fleader{font-size:14px;color:var(--sand)}
+.fcard .gl{font-size:13px;color:var(--muted);line-height:1.4}
+.fcard .gl b{color:var(--sand);font-weight:600}
+.fcard .tag{position:absolute;right:10px;top:10px;background:var(--acc);color:#14100a;font:700 12px var(--sans);border-radius:5px;padding:1px 7px}
+.picker.compact .gl{display:none}
+.dlcb{display:inline-block;align-self:flex-start;font:700 11px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:#14100a;background:var(--spice2);border-radius:4px;padding:2px 7px;margin-top:2px}
+.lead{padding:20px 22px;margin:6px 0 18px}
+.lead h2{font:700 22px var(--serif);color:var(--spice2);margin:0 0 6px}
+.lead p{margin:0 0 8px;color:var(--sand);max-width:760px}
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px 22px;margin-top:12px;font-size:14px;color:var(--muted)}
+.legend div b{color:var(--sand)}
+.cols{display:grid;gap:18px}
+.cols.two{grid-template-columns:1fr 1fr}
+.fhead{--acc:#e8812f;border-left:6px solid var(--acc);padding:6px 0 6px 14px;margin:6px 0 4px}
+.fhead h2{font:700 clamp(22px,3vw,30px)/1.1 var(--serif);margin:0;color:var(--acc)}
+.fhead .sub{color:var(--muted);font-size:14px;margin-top:3px}
+.fhead .ab{display:inline-block;background:var(--acc);color:#14100a;font:700 12px var(--sans);border-radius:5px;padding:1px 7px;margin-right:8px;vertical-align:middle}
+.sec{margin:18px 0 0}
+.sec>h3{font:700 18px var(--serif);letter-spacing:.02em;color:var(--spice2);margin:0 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.sec>h3 .n{font:500 13px var(--sans);color:var(--muted);letter-spacing:0}
+.fact{--acc:#e8812f;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:8px;padding:10px 12px;margin:0 0 9px}
+.fact.dup{padding:7px 12px;background:transparent;border-style:dashed;border-left-style:solid;font-size:14px;color:var(--muted)}
+.fact.dup b{color:var(--sand);font-weight:600}
+.fact.dup .meta{margin-top:3px}
+.fact.named{box-shadow:inset 0 0 0 1px var(--acc)}
+.fact .ft{font:700 16px var(--serif);color:var(--sand);margin:0 0 3px}
+.fact p{margin:0;overflow-wrap:anywhere}
+.fact p.clamp{display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+.fact .part{display:flex;gap:8px;font-size:15px;margin:1px 0}
+.fact .pk{flex:0 0 auto;min-width:70px;color:var(--muted);font:600 11px/1.9 var(--sans);letter-spacing:.08em;text-transform:uppercase}
+.fact .pv{overflow-wrap:anywhere}
+.meta{display:flex;flex-wrap:wrap;gap:5px 6px;align-items:center;margin-top:8px}
+.chip{font:600 11.5px/1.4 var(--sans);border:1px solid var(--line2);border-radius:999px;padding:0 8px;color:var(--muted);white-space:nowrap}
+.chip.sp-late-game{color:var(--bad);border-color:rgba(232,128,106,.5)}
+.chip.sp-progression{color:var(--warn);border-color:rgba(232,179,76,.5)}
+.chip.sp-none{color:var(--ok);border-color:rgba(147,201,126,.5)}
+.chip.sp-dlc{color:#14100a;background:var(--spice2);border-color:var(--spice2)}
+.chip.l-single{color:var(--warn)}
+.chip.l-confirmed{color:var(--ok)}
+.chip.l-contradicted{color:var(--bad)}
+.chip.l-hypothesis{color:var(--info)}
+.ptr{font:12px var(--mono);color:var(--muted);margin-left:auto;overflow-wrap:anywhere}
+.rm{background:none;border:0;color:var(--spice2);font:600 13px var(--sans);cursor:pointer;padding:2px 0;margin-top:2px;text-decoration:underline}
+.more{width:100%;background:transparent;border:1px dashed var(--line2);color:var(--spice2);border-radius:8px;padding:8px;font:600 14px var(--sans);cursor:pointer;margin-bottom:9px}
+.more:hover{background:rgba(232,129,47,.1)}
+.hid{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;background:rgba(232,179,76,.08);border:1px dashed rgba(232,179,76,.45);border-radius:8px;padding:7px 11px;margin:0 0 9px;font-size:14px;color:var(--warn)}
+.empty{color:var(--muted);border:1px dashed var(--line);border-radius:8px;padding:10px 12px;margin:0 0 9px;font-size:15px}
+.sub3{font:600 11px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:12px 0 6px}
+details.shared{margin:6px 0 0}
+details.shared>summary{cursor:pointer;color:var(--spice2);font:600 14px var(--sans);padding:6px 0}
+.bandwrap{margin-top:12px}
+.foot{margin-top:34px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:12px}
+@media (max-width:760px){
+  .cols.two{grid-template-columns:1fr}
+  .picker{grid-template-columns:1fr 1fr}
+  header.top svg.dunes{opacity:.3}
+  .ptr{margin-left:0;width:100%}
+}
+@media (max-width:480px){.picker{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <svg class="dunes" viewBox="0 0 560 140" aria-hidden="true" preserveAspectRatio="xMaxYMid meet">
+      <circle cx="430" cy="42" r="26" fill="#e8812f" opacity=".55"/>
+      <path d="M0 140V96c60-34 120-34 190-6s110 26 170-8 120-30 200 8v50z" fill="#3a2716"/>
+      <path d="M0 140v-26c70-24 140-22 210 0s130 16 200-6 100-8 150 6v26z" fill="#2a1c10"/>
+    </svg>
+    <h1>Faction Planner</h1>
+    <p>Dune: Spice Wars. Pick a house, or two to compare. Every line is copied from this guide, and the grey path under it says where to read it in full.</p>
+  </header>
+
+  <section class="panel controls" aria-label="Controls">
+    <div class="crow">
+      <div><span class="lbl">View</span>
+        <div class="seg" id="modeSeg" role="group" aria-label="View"></div></div>
+      <div><span class="lbl">Enemy detail</span><div class="seg" id="enemySeg" role="group" aria-label="Enemy detail"></div>
+        <div class="dhint">Rivals, counters, hazards. 0 shows none, 5 shows everything.</div></div>
+      <div><span class="lbl">Decision detail</span><div class="seg" id="puzzleSeg" role="group" aria-label="Decision detail"></div>
+        <div class="dhint">Which pick and in what order. 0 shows none, 3 shows everything.</div></div>
+      <div><span class="lbl">Spoiler reach</span><div class="seg" id="spoilSeg" role="group" aria-label="Spoiler reach"></div>
+        <div class="dhint">Late-game facts stay hidden until you reach for them.</div></div>
+      <div><span class="lbl">Paid DLC</span><div class="seg" id="dlcSeg" role="group" aria-label="Paid DLC"></div>
+        <div class="dhint">House Vernius of Ix. Off hides the house and every line that belongs to it.</div></div>
+    </div>
+    <div class="status" id="status" aria-live="polite"></div>
+  </section>
+
+  <nav class="picker" id="picker" aria-label="Factions"></nav>
+  <main id="view"></main>
+
+  <p class="foot">Facts, tiers and source counts are the guide's own tags, not new claims. Where the guide says sources disagree or a line is a hypothesis, the line wears that badge.</p>
+</div>
+
+<script>
+const DATA=/*__DATA__*/null;
+</script>
+<script>
+(function(){
+"use strict";
+var D=DATA, FACT=D.facts;
+var ACC={atreides:"#6fb67a",harkonnen:"#e0624f",smugglers:"#dbab48",fremen:"#55aedf",corrino:"#c297e0",ecaz:"#8da2f0",vernius:"#4ccdb9"};
+var SPOIL_LABEL=["Basic","Progression","Late game"];
+var PREVIEW=6;
+
+window.S={mode:"single",picks:[],enemy:D.dials.enemy,puzzle:D.dials.puzzle,spoil:1,dlc:D.dials.dlc,more:{},exp:{},open:{}};
+var S=window.S;
+
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function fac(id){for(var i=0;i<D.factions.length;i++){if(D.factions[i].id===id)return D.factions[i];}return null;}
+function short(f){return f.name.replace(/^House /,"").replace(/ of Ix$/,"");}
+function isDlc(f){return f.s.indexOf("dlc")===0;}
+/* A dlc: fact is gated on two axes: its own depth (enemy/decision tier, read here as the spoiler rank: 0 none, 1 progression, 2 late game, 3 story) and the DLC switch. */
+function rank(f){var r=D.spoilRank[f.s];if(r!==undefined)return r;if(isDlc(f))return Math.min(3,Math.max(f.e,f.p));return 3;}
+function reasons(f){var r=[];if(isDlc(f)&&!S.dlc)r.push("DLC off");if(f.e>S.enemy)r.push("enemy "+f.e);if(f.p>S.puzzle)r.push("decision "+f.p);if(rank(f)>S.spoil)r.push(isDlc(f)?["","progression","late-game","story"][rank(f)]+" depth":f.s);return r;}
+function visible(id){return reasons(FACT[id]).length===0;}
+
+function segHTML(items,cur,act,guide){
+  return items.map(function(it){
+    return '<button type="button" data-act="'+act+'" data-v="'+it.v+'" aria-pressed="'+(cur===it.v)+'">'+esc(it.t)+(guide===it.v?'<span class="gdot" title="Guide setting"></span>':'')+'</button>';
+  }).join("");
+}
+function range(n){var a=[];for(var i=0;i<=n;i++)a.push({v:i,t:String(i)});return a;}
+
+function allIdsFor(fid){
+  var f=fac(fid),out={};
+  D.sections.forEach(function(s){var sec=f.sections[s.id];sec.own.concat(sec.shared).forEach(function(k){out[k]=1;});});
+  return Object.keys(out);
+}
+
+function renderControls(){
+  document.getElementById("modeSeg").innerHTML=segHTML([{v:"single",t:"One faction"},{v:"compare",t:"Compare two"}],S.mode,"mode");
+  document.getElementById("enemySeg").innerHTML=segHTML(range(D.dials.enemyMax),S.enemy,"enemy",D.dials.enemy);
+  document.getElementById("puzzleSeg").innerHTML=segHTML(range(D.dials.puzzleMax),S.puzzle,"puzzle",D.dials.puzzle);
+  document.getElementById("spoilSeg").innerHTML=segHTML([{v:0,t:"Basic"},{v:1,t:"Progression"},{v:2,t:"Late game"}],S.spoil,"spoil",1);
+  document.getElementById("dlcSeg").innerHTML=segHTML([{v:1,t:"On"},{v:0,t:"Off"}],S.dlc?1:0,"dlc",D.dials.dlc?1:0);
+  var st=document.getElementById("status");
+  var changed=(S.enemy!==D.dials.enemy)||(S.puzzle!==D.dials.puzzle)||(S.spoil!==1)||(S.dlc!==D.dials.dlc);
+  var guide='Guide setting: enemy '+D.dials.enemy+', decision '+D.dials.puzzle+' ('+esc(D.dials.ptr)+'); spoiler reach starts at Progression, so late-game facts are hidden; paid DLC '+(D.dials.dlc?'shown':'hidden')+'.';
+  var left;
+  if(S.picks.length){
+    var ids={};S.picks.forEach(function(p){allIdsFor(p).forEach(function(k){ids[k]=1;});});
+    var all=Object.keys(ids),vis=all.filter(visible).length;
+    left='Showing <b>'+vis+'</b> of '+all.length+' facts'+(all.length-vis?' ('+(all.length-vis)+' hidden by your dials)':'');
+  }else{
+    var tot=Object.keys(FACT).length,v=Object.keys(FACT).filter(visible).length;
+    left='The guide holds <b>'+tot+'</b> facts for these houses; <b>'+v+'</b> show at these dials.';
+  }
+  st.innerHTML='<span>'+left+'</span><span>'+guide+(changed?' <button type="button" class="linkbtn" data-act="reset">Back to guide settings</button>':'')+'</span>';
+}
+
+function renderPicker(){
+  var compact=S.picks.length>0;
+  var h=D.factions.filter(function(f){return S.dlc||!f.dlc;}).map(function(f){
+    var idx=S.picks.indexOf(f.id);
+    var g=f.glance;
+    /* the names come from a tagged table: show them only when that tag's tiers are in reach, like any fact */
+    var names=reasons({e:g.e,p:g.p,s:g.s}).length===0
+      ?'<b>Councillors</b> '+esc(g.councillors.join(", "))+'<br><b>Heroes</b> '+esc(g.heroes.join(", "))
+      :'Councillor and hero names are hidden at these dials.';
+    var tag=idx>=0&&S.mode==="compare"?'<span class="tag">'+(idx?"B":"A")+'</span>':"";
+    return '<button type="button" class="fcard" style="--acc:'+ACC[f.id]+'" data-act="pick" data-v="'+f.id+'" aria-pressed="'+(idx>=0)+'">'+tag+
+      '<span class="fname">'+esc(f.name)+'</span><span class="fleader">'+esc(f.leader)+'</span>'+
+      (f.dlc?'<span class="dlcb" title="'+esc(f.rosterPtr)+'">Paid DLC</span>':'')+
+      '<span class="gl">'+names+'</span></button>';
+  }).join("");
+  var p=document.getElementById("picker");p.innerHTML=h;p.className="picker"+(compact?" compact":"");
+}
+
+function chips(f,id){
+  var c=[];
+  c.push('<span class="chip" title="Enemy and decision detail tiers this claim carries in the corpus">Enemy '+f.e+' · Decision '+f.p+'</span>');
+  if(f.s.indexOf("dlc")===0){c.push('<span class="chip sp-dlc" title="Spoiler tag: '+esc(f.s)+'">DLC: Vernius of Ix</span>');}
+  else{var nm={"none":"No spoiler","progression":"Progression","late-game":"Late game"}[f.s]||f.s;c.push('<span class="chip sp-'+esc(f.s)+'" title="Spoiler tag in the corpus">'+esc(nm)+'</span>');}
+  var l=f.lab;
+  if(l==="single")c.push('<span class="chip l-single" title="The guide labels this line single source: the claim on it with the fewest publishers has one">Single source</span>');
+  else if(l.indexOf("confirmed")===0)c.push('<span class="chip l-confirmed" title="The claim on this line with the fewest publishers has two or more">'+l.split(":")[1]+' sources</span>');
+  else if(l==="contradicted")c.push('<span class="chip l-contradicted" title="The guide records that its sources disagree">Sources disagree</span>');
+  else if(l==="hypothesis")c.push('<span class="chip l-hypothesis" title="Derived by the guide, not stated by a source">Hypothesis</span>');
+  if(f.c)c.push('<span class="chip" title="Confidence the corpus gives this claim">'+esc(f.c)+' confidence</span>');
+  c.push('<span class="ptr" title="Read it in full here">'+esc(id)+'</span>');
+  return '<div class="meta">'+c.join("")+'</div>';
+}
+
+function factHTML(id,acc,named){
+  var f=FACT[id],body="";
+  if(f.title){
+    body+='<div class="ft">'+esc(f.title)+'</div>';
+    (f.rowparts||[]).forEach(function(pt){body+='<div class="part"><span class="pk">'+esc(pt[0])+'</span><span class="pv">'+esc(pt[1])+'</span></div>';});
+  }
+  if(f.t){
+    var long=f.t.length>340,open=S.exp[id];
+    body+='<p class="'+(long&&!open?"clamp":"")+'">'+esc(f.t)+'</p>';
+    if(long)body+='<button type="button" class="rm" data-act="exp" data-v="'+esc(id)+'">'+(open?"Show less":"Read all")+'</button>';
+  }
+  return '<article class="fact'+(named?" named":"")+'" style="--acc:'+acc+'">'+body+chips(f,id)+'</article>';
+}
+
+function needs(ids){
+  var e=0,p=0,s=0,d=0;
+  ids.forEach(function(id){var f=FACT[id];if(f.e>S.enemy)e=Math.max(e,f.e);if(f.p>S.puzzle)p=Math.max(p,f.p);if(rank(f)>S.spoil)s=Math.max(s,rank(f));if(isDlc(f)&&!S.dlc)d=1;});
+  return {e:e,p:p,s:s,d:d};
+}
+function hiddenNote(hid){
+  if(!hid.length)return "";
+  var by={};hid.forEach(function(id){reasons(FACT[id]).forEach(function(r){by[r]=1;});});
+  var n=needs(hid);
+  return '<div class="hid"><span><b>'+hid.length+'</b> hidden ('+Object.keys(by).map(esc).join(", ")+')</span>'+
+    '<button type="button" class="linkbtn" data-act="reveal" data-e="'+n.e+'" data-p="'+n.p+'" data-s="'+n.s+'" data-d="'+n.d+'">Show them</button></div>';
+}
+
+var SEEN={};
+function dupHTML(id,acc,where){
+  var f=FACT[id],ex=f.title?f.title:f.t;
+  if(ex.length>130)ex=ex.slice(0,130).replace(/\s+\S*$/,"")+"...";
+  return '<article class="fact dup" style="--acc:'+acc+'"><p><b>Also under '+esc(where)+':</b> '+esc(ex)+'</p><div class="meta"><span class="ptr" style="margin-left:0">'+esc(id)+'</span></div></article>';
+}
+function listHTML(ids,acc,key,namedSet,seenKey,secName){
+  var vis=ids.filter(visible),hid=ids.filter(function(i){return !visible(i);});
+  var out="";
+  var lim=S.more[key]?vis.length:PREVIEW;
+  vis.slice(0,lim).forEach(function(id){
+    if(seenKey){
+      var k=seenKey+"|"+id;
+      if(SEEN[k]){out+=dupHTML(id,acc,SEEN[k]);return;}
+      SEEN[k]=secName;
+    }
+    out+=factHTML(id,acc,namedSet&&namedSet[id]);
+  });
+  if(vis.length>lim)out+='<button type="button" class="more" data-act="more" data-v="'+esc(key)+'">Show '+(vis.length-lim)+' more</button>';
+  out+=hiddenNote(hid);
+  return {html:out,vis:vis.length,hid:hid.length};
+}
+
+function colHTML(f,s){
+  var sec=f.sections[s.id],acc=ACC[f.id];
+  var named=sec.shared.filter(function(id){return (D.names[id]||[]).indexOf(f.id)>=0;});
+  var own=listHTML(sec.own,acc,f.id+"/"+s.id,null,f.id,s.name);
+  var html=own.html;
+  if(!sec.own.length)html+='<div class="empty">Nothing in the guide under this heading is tied to '+esc(short(f))+' alone.</div>';
+  var nm={};named.forEach(function(i){nm[i]=1;});
+  var nl=listHTML(named,acc,f.id+"/"+s.id+"/named",nm,f.id,s.name);
+  if(named.length){html+='<div class="sub3">Elsewhere in the guide, naming '+esc(short(f))+'</div>'+nl.html;}
+  return {html:html,vis:own.vis+nl.vis,hid:own.hid+nl.hid,named:named};
+}
+
+function sharedHTML(s,faclist){
+  var base=faclist[0].sections[s.id].shared;
+  var skip={};
+  faclist.forEach(function(f){f.sections[s.id].shared.forEach(function(id){if((D.names[id]||[]).indexOf(f.id)>=0)skip[id]=1;});});
+  var ids=base.filter(function(id){return !skip[id];});
+  if(!ids.length)return "";
+  var vis=ids.filter(visible),hid=ids.length-vis.length;
+  var key="shared/"+s.id;
+  var open=S.open[key]!==undefined?S.open[key]:false;
+  var l=listHTML(ids,"#b9a383",key);
+  return '<details class="shared" data-key="'+key+'"'+(open?" open":"")+'><summary>'+(faclist.length>1?"Same for both houses":"Same for every house")+' ('+vis.length+' shown'+(hid?', '+hid+' hidden':'')+')</summary>'+l.html+'</details>';
+}
+
+function headHTML(f,ab){
+  return '<div class="fhead" style="--acc:'+ACC[f.id]+'"><h2>'+(ab?'<span class="ab">'+ab+'</span>':'')+esc(f.name)+'</h2><div class="sub">Leader: '+esc(f.leader)+(f.dlc?' · <b>Paid DLC</b> (Vernius of Ix)':'')+' <span class="ptr" style="margin-left:6px">'+esc(f.leaderPtr)+'</span></div></div>';
+}
+
+function renderView(){
+  var v=document.getElementById("view");
+  if(!S.picks.length){
+    v.innerHTML='<section class="panel lead"><h2>Choose a house</h2>'+
+      '<p>Each house opens onto six things: what makes it play differently, its heroes and councillors, its Conquest starting traits, how to open, what the Landsraad and the Governorship mean for it, and which victories it leans toward.</p>'+
+      '<p>Pick two with <b>Compare two</b> to read them side by side. The three dials above hide what you have not asked to see.</p>'+
+      '<div class="legend">'+
+      '<div><b>Enemy / Decision tier</b> is the guide\'s own rating of how much a line tells you about opponents or about which pick to make.</div>'+
+      '<div><b>Single source</b> (amber) is the guide\'s label for a line whose weakest claim has one publisher (a line holding several claims carries the lowest count among them); <b>2+ sources</b> (green) means even its weakest claim has more than one; <b>Sources disagree</b> (red) is a recorded conflict.</div>'+
+      '<div><b>Late game</b> lines (red tag) are held back until Spoiler reach is raised. <b>DLC</b> lines belong to the paid Vernius of Ix house; each is also held back by its own depth, like any other line, and the Paid DLC control switches the house off.</div>'+
+      '</div></section>';
+    return;
+  }
+  SEEN={};
+  var picks=S.picks.map(fac);
+  var two=S.mode==="compare";
+  var html="";
+  if(two&&picks.length<2){html+='<div class="empty">Pick a second house to compare with '+esc(picks[0].name)+'.</div>';}
+  html+='<div class="cols'+(two&&picks.length===2?" two":"")+'">'+picks.map(function(f,i){return '<div>'+headHTML(f,two?(i?"B":"A"):"")+'</div>';}).join("")+'</div>';
+  D.sections.forEach(function(s){
+    var cols=picks.map(function(f){return colHTML(f,s);});
+    var tv=0,th=0;cols.forEach(function(c){tv+=c.vis;th+=c.hid;});
+    html+='<section class="sec"><h3>'+esc(s.name)+'<span class="n">'+tv+' shown'+(th?' · '+th+' hidden':'')+'</span></h3>';
+    html+='<div class="cols'+(picks.length===2?" two":"")+'">'+cols.map(function(c){return '<div>'+c.html+'</div>';}).join("")+'</div>';
+    html+='<div class="bandwrap">'+sharedHTML(s,picks)+'</div></section>';
+  });
+  v.innerHTML=html;
+  var ds=v.querySelectorAll("details.shared");
+  for(var i=0;i<ds.length;i++){ds[i].addEventListener("toggle",function(e){S.open[e.target.getAttribute("data-key")]=e.target.open;});}
+}
+
+function renderAll(){renderControls();renderPicker();renderView();}
+window.renderAll=renderAll;
+
+document.addEventListener("click",function(e){
+  var t=e.target.closest("[data-act]");if(!t)return;
+  var a=t.getAttribute("data-act"),v=t.getAttribute("data-v");
+  if(a==="mode"){S.mode=v;if(v==="single")S.picks=S.picks.slice(0,1);}
+  else if(a==="enemy")S.enemy=+v;
+  else if(a==="puzzle")S.puzzle=+v;
+  else if(a==="spoil")S.spoil=+v;
+  else if(a==="dlc"){S.dlc=(+v===1);if(!S.dlc)S.picks=S.picks.filter(function(id){return !fac(id).dlc;});}
+  else if(a==="reset"){S.enemy=D.dials.enemy;S.puzzle=D.dials.puzzle;S.spoil=1;S.dlc=D.dials.dlc;}
+  else if(a==="pick"){
+    var i=S.picks.indexOf(v);
+    if(i>=0)S.picks.splice(i,1);
+    else if(S.mode==="single")S.picks=[v];
+    else{if(S.picks.length>=2)S.picks.pop();S.picks.push(v);}
+  }
+  else if(a==="more")S.more[v]=true;
+  else if(a==="exp")S.exp[v]=!S.exp[v];
+  else if(a==="reveal"){S.enemy=Math.max(S.enemy,+t.getAttribute("data-e"));S.puzzle=Math.max(S.puzzle,+t.getAttribute("data-p"));S.spoil=Math.max(S.spoil,+t.getAttribute("data-s"));if(t.getAttribute("data-d")==="1")S.dlc=true;}
+  renderAll();
+});
+
+renderAll();
+})();
+</script>
+</body>
+</html>
