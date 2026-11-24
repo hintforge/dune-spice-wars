@@ -194,7 +194,7 @@ def facts_from_block(b, rule, fid_prefix, faction_names):
 def main():
     report = "--report" in sys.argv
     files = [p for p in glob.glob(os.path.join(ROOT, "**", "*.md"), recursive=True)
-             if not any(x in p.replace("\\", "/") for x in ("/research_briefs/", "/research_inbox/", "/_overflow/", "/extract_tools/", "/artifacts/"))]
+             if not any(x in p.replace("\\", "/") for x in ("/_overflow/", "/extract_tools/", "/artifacts/"))]
     blocks = []
     for p in sorted(files):
         rel = os.path.relpath(p, ROOT).replace("\\", "/")

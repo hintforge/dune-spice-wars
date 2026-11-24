@@ -2,7 +2,7 @@
 
 **status:** research-integrated
 **last_reconciled:** 2026-11-24
-**patch note:** Evidence for builds is thin and old. The sources are one Reddit build-order thread (2024-01), one Harkonnen thread (2024-10), one Steam discussion (2023-10), one Steam guide (updated 2023-09) whose author calls it outdated, and two 2022 Russian and Chinese pieces. All of them predate v2.2.3 (2024-12-04), and the 2024-03-07 combat, stealth and Intel rework changed the ground under the older ones. Every line below names the patch era of its source. Lines marked as hypotheses are the previous researcher's reading of councilor and development text, not from any guide. P2 looked for current-patch builds and found only Fremen multiplayer material from 2025 (last section). Builds are advice, not facts; the claims recorded are what players reported.
+**patch note:** Evidence for builds is thin and old. The sources are one Reddit build-order thread (2024-01), one Harkonnen thread (2024-10), one Steam discussion (2023-10), one Steam guide (updated 2023-09) whose author calls it outdated, and two 2022 Russian and Chinese pieces. All of them predate v2.2.3 (2024-12-04), and the 2024-03-07 combat, stealth and Intel rework changed the ground under the older ones. Every line below names the patch era of its source. Lines marked as hypotheses are a reading of councilor and development text, not from any guide. P2 looked for current-patch builds and found only Fremen multiplayer material from 2025 (last section). Builds are advice, not facts; the claims recorded are what players reported.
 
 ## Generic opening (all factions)
 
